@@ -6,7 +6,7 @@ A python interface for the Tobii Eye Tracker
 2. ```from EyeTracker import init, getBuffer```
 3. Take a look at example.py
 
-# Requirement
+## Requirement
 1. Windows 10
 2. Python3.7 32-bit
 3. Visual Studio 2019
