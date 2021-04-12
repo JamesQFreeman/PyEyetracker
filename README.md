@@ -8,7 +8,7 @@ A python interface for the Tobii Eye Tracker
 
 ## Requirement
 1. Windows 10
-2. Python3.7 32-bit
+2. Python 3.7 32-bit (32 instead of 64!)
 3. Visual Studio 2019
 4. Tobii Native Stream Engine
 
