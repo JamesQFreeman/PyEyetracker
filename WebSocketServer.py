@@ -14,7 +14,7 @@ class WebSocketGazeTracker:
         self.clients = set()
         self.gaze_queue = deque(maxlen=CACHE_SIZE)
         self.last_location = None
-        try:
+        try: 
             TobiiEyeTracker.init()
         except:
             pass
