@@ -1,11 +1,14 @@
 import asyncio
 import websockets
 import json
+import sys
+import os
 import time
 from collections import deque
 import tkinter as tk
 from tkinter import ttk
 import threading
+import socket
 import TobiiEyeTracker
 
 class WebSocketGazeTracker:
@@ -99,12 +102,16 @@ class GazeTrackerGUI:
         
         self.tracker = None
         self.server_thread = None
+        master.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         ttk.Label(master, text="WebSocket Port:").grid(row=0, column=0, sticky="e", padx=5, pady=5)
         self.port_entry = ttk.Entry(master)
         self.port_entry.insert(0, "8765")
         self.port_entry.grid(row=0, column=1, padx=5, pady=5)
 
+        self.test_port_button = ttk.Button(master, text="Test Port", command=self.test_port)
+        self.test_port_button.grid(row=0, column=2, padx=5, pady=5)
+        
         ttk.Label(master, text="Update Interval (s):").grid(row=1, column=0, sticky="e", padx=5, pady=5)
         self.interval_entry = ttk.Entry(master)
         self.interval_entry.insert(0, "0.1")
@@ -152,13 +159,46 @@ class GazeTrackerGUI:
     def stop_server(self):
         if self.tracker:
             self.tracker.stop()
-        if self.server_thread:
-            self.server_thread.join()
+            self.log_message("Stopping server...")
+            
+            # Wait for the server to close gracefully
+            timeout = 5  # 5 seconds timeout
+            start_time = time.time()
+            while self.server_thread.is_alive() and time.time() - start_time < timeout:
+                time.sleep(0.1)
+            
+            # If the server is still running after timeout, force close it
+            if self.server_thread.is_alive():
+                os._exit(0)
+            else:
+                self.log_message("Server stopped successfully.")
 
         self.start_button.config(state="normal")
         self.stop_button.config(state="disabled")
         self.status_label.config(text="Server Status: Stopped")
-        self.log_message("Server stopped")
+        self.tracker = None
+        self.server_thread = None
+
+    def on_closing(self):
+        if self.tracker:
+            self.stop_server()
+        self.master.destroy()
+
+    def test_port(self):
+        try:
+            port = int(self.port_entry.get())
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            result = sock.connect_ex(('localhost', port))
+            if result == 0:
+                self.log_message(f"Port {port} is already in use.")
+            else:
+                self.log_message(f"Port {port} is available.")
+            sock.close()
+        except ValueError:
+            self.log_message("Please enter a valid port number.")
+        except Exception as e:
+            self.log_message(f"An error occurred while testing the port: {str(e)}")
+
 
 if __name__ == "__main__":
     root = tk.Tk()
