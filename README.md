@@ -1,14 +1,27 @@
 # PyEyetracker
-A Python interface for the Tobii Eye Tracker. Now V2!
+A Python interface for the Tobii Eye Tracker. Supports GUI and websocket server.
 
+![alt text](ReadmeImage/GUI.png)
 ## Features
 - Support for both 32-bit and 64-bit (massive improvement, guys!) Python environments.
 - Easy-to-use GazeTracker class for 64-bit applications compare to V1.
 - Backward compatibility with the original 32-bit EyeTracker interface
 
-## Usage
-1. Download the .dll and .pyd files to your project's Python folder
-2. For 64-bit applications, use the new GazeTracker class:
+## Usage Methods
+
+### 1. WebSocket GUI
+
+Download the executable from the releases page and run it. This provides a graphical interface and WebSocket server.
+
+### 2. WebSocket Command Line
+
+Run the WebSocket server from the command line:
+   ```
+   python WebSocketServer.py
+   ```
+### 3. Python Package
+
+For 64-bit applications, use the new GazeTracker class:
    ```python
     from GazeTracker import GazeTracker
     import time
@@ -21,30 +34,27 @@ A Python interface for the Tobii Eye Tracker. Now V2!
         print(tracker.get_movement())
         time.sleep(1)
    ```
+## Installation
 
-## Requirements and installation
-1. A 32bit python and 64bit python which you can downloaded from [here](https://www.python.org/downloads/windows/).
-2. Tobii Experience set up and running.
-3. ```pip install pywin32``` for the 32bit python and the python env you gonna use. (see IPC design)
-4. Copy ```TobiiEyeTracker.pyd, tobii_stream_engine.dll, GazeTracker.py, _listener_win32.py``` into you develop dir.
-5. Setup ```PYTHON_32BIT = r"dir\to\your\python-32bit.exe"``` in ```GazeTracker.py```
+### For Python Package:
+1. Ensure you have Python installed (32-bit or 64-bit)
+2. Install required dependencies:
+   ```
+   pip install pywin32 websockets
+   ```
+3. Copy `TobiiEyeTracker.pyd`, `tobii_stream_engine.dll`, `GazeTracker.py`, and `_listener_win32.py` into your project directory
+4. Set up the `PYTHON_32BIT` path in `GazeTracker.py`
 
-## Inter-Process Communication (IPC) Design
+### For WebSocket Command Line 
+1. install python 32bit (if you are using conda, try: `set CONDA_SUBDIR=win-32` and `conda create -n py32 python=3.7`)
+2. install pywin32: `pip install pywin32 websockets`
 
-PyEyetracker uses Windows named pipes for inter-process communication between the 32-bit data collection process and the 64-bit main application. Named pipes are chosen for several reasons:
-
-1. Efficiency: They provide fast, low-overhead communication between processes on the same machine.
-2. Simplicity: Named pipes are straightforward to implement and use in Python with the `win32pipe` and `win32file` modules.
-3. Compatibility: They work seamlessly between 32-bit and 64-bit processes on Windows.
-4. Reliability: Named pipes offer a robust, stream-oriented communication channel with built-in synchronization.
-
-This IPC mechanism allows us to leverage the 32-bit Tobii SDK while still providing a 64-bit interface for modern Python environments, offering the best of both worlds in terms of compatibility and performance.
 
 ## Development using c++
 To develop additional functions, follow these steps:
 1. Download Tobii Native Stream Engine using NuGet in Visual Studio
    - Open Package Manager Console
-   - Search for "Tobii.StreamEngine" and install the package
+   - Search for "Tobii.StreamEngine" and install the package (This can no longer be done becase Tobii decided to sell its pro line for more money)
 2. Follow the setup instructions in the [Visual Studio C++/Python integration guide](https://docs.microsoft.com/en-us/visualstudio/python/working-with-c-cpp-python-in-visual-studio?view=vs-2019)
 3. Refer to the [Tobii Stream Engine API documentation](https://vr.tobii.com/sdk/develop/native/stream-engine/api/) for available functions and usage
 

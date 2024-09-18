@@ -109,8 +109,7 @@ class GazeTrackerGUI:
         self.port_entry.insert(0, "8765")
         self.port_entry.grid(row=0, column=1, padx=5, pady=5)
 
-        self.test_port_button = ttk.Button(master, text="Test Port", command=self.test_port)
-        self.test_port_button.grid(row=0, column=2, padx=5, pady=5)
+        
         
         ttk.Label(master, text="Update Interval (s):").grid(row=1, column=0, sticky="e", padx=5, pady=5)
         self.interval_entry = ttk.Entry(master)
@@ -129,7 +128,10 @@ class GazeTrackerGUI:
         self.stop_button.grid(row=3, column=1, padx=5, pady=5)
 
         self.status_label = ttk.Label(master, text="Server Status: Stopped")
-        self.status_label.grid(row=4, column=0, columnspan=2, padx=5, pady=5)
+        self.status_label.grid(row=4, column=0, padx=5, pady=5)
+
+        self.test_port_button = ttk.Button(master, text="Test Port", command=self.test_port)
+        self.test_port_button.grid(row=4, column=1, padx=5, pady=5)
 
         # Add text box for logs
         self.log_text = tk.Text(master, height=10, width=50)
@@ -199,7 +201,8 @@ class GazeTrackerGUI:
         except Exception as e:
             self.log_message(f"An error occurred while testing the port: {str(e)}")
 
-
+# compile to exe
+# pyinstaller --onefile --windowed --icon=eye.ico --name=GazeServer WebSocketServerTK.py
 if __name__ == "__main__":
     root = tk.Tk()
     gui = GazeTrackerGUI(root)

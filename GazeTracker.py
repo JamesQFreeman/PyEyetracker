@@ -13,7 +13,7 @@ GAZE_FORMAT = '!ff'  # timestamp, x, y
 GAZE_SIZE = struct.calcsize(GAZE_FORMAT)
 CACHE_SIZE = 65535
 # PYTHON_32BIT = r""
-PYTHON_32BIT = r"C:\Users\hz9423\anaconda3\envs\py32\python.exe"
+PYTHON_32BIT = r"C:\your\path\to\32bit\python.exe"
 
 class GazeTracker:
     '''
