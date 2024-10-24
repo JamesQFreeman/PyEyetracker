@@ -22,6 +22,7 @@ class WebSocketGazeTracker:
         self.server = None
         self.loop = None
         self.log_callback = log_callback
+        self.overflowed = False
 
     async def register(self, websocket):
         self.clients.add(websocket)
@@ -38,7 +39,18 @@ class WebSocketGazeTracker:
 
     def get_current_location(self):
         gaze_data = TobiiEyeTracker.getBuffer()
-        self.log_callback(f"Reading: {len(gaze_data)} gaze points")
+        original_len = len(gaze_data)
+        if original_len > 30*self.interval+2:
+            self.log_callback(f"Stackoverflow! suggest reboot this program.")
+            self.overflowed = True
+        # the gaze per second should be 30.
+        # so we cut off the gaze data if it is too much.
+        if original_len > 30*self.interval:
+            gaze_data = gaze_data[-int(30*self.interval):]
+        if self.overflowed:
+            self.log_callback(f"Reading: {len(gaze_data)} gaze points, original overflowed: {original_len}")
+        else:
+            self.log_callback(f"Reading: {len(gaze_data)} gaze points")
         gaze_data_time = [(x,y,int(time.time() * 1000)) for x,y in gaze_data]
         if gaze_data:
             self.last_location = (gaze_data[-1][0], gaze_data[-1][1])
@@ -201,9 +213,19 @@ class GazeTrackerGUI:
         except Exception as e:
             self.log_message(f"An error occurred while testing the port: {str(e)}")
 
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 # compile to exe
 # pyinstaller --onefile --windowed --icon=eye.ico --name=GazeServer WebSocketServerTK.py
 if __name__ == "__main__":
     root = tk.Tk()
+    root.iconbitmap(resource_path('Blue_eye_icon.ico'))
     gui = GazeTrackerGUI(root)
     root.mainloop()
